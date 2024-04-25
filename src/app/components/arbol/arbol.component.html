@@ -34,9 +34,9 @@
       </div>
     </form>
   </ng-container>
-  
+
   <!-- CONSTRUCCIÓN -->
-  
+
   <ng-container
     *ngIf="tipoPlanId != '611af8464a34b3599e3799a2' && mostrar && !consulta && (!armonizacionPED && !armonizacionPI)">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
@@ -79,9 +79,9 @@
       <tr mat-row matRipple *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </ng-container>
-  
+
   <!-- CONSULTA -->
-  
+
   <ng-container *ngIf="tipoPlanId != '611af8464a34b3599e3799a2' && mostrar && consulta">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <ng-container matColumnDef="nombre">
@@ -114,9 +114,9 @@
       <tr mat-row matRipple *matRowDef="let row; columns: displayedColumnsView;"></tr>
     </table>
   </ng-container>
-  
+
   <!-- ARMONIZACION -->
-  
+
   <ng-container
     *ngIf="tipoPlanId != '611af8464a34b3599e3799a2' && mostrar && !consulta && (armonizacionPED && !armonizacionPI) || (!armonizacionPED && armonizacionPI)">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">

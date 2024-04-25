@@ -3,13 +3,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { RequestManager } from '../../../services/requestManager';
-import { ConsultarDialogPedComponent } from './consultar-dialog-ped/consultar-dialog-ped.component';
-import Swal from 'sweetalert2';
-import { environment } from 'src/environments/environment';
-import { EditarDialogComponent } from '../../editar-dialog/editar-dialog.component';
-import { Plan } from 'src/app/@core/models/plan';
 import { DataRequest, DataRequestMID } from 'src/app/@core/models/dataRequest';
+import { Plan } from 'src/app/@core/models/plan';
+import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
+import { RequestManager } from '../../../services/requestManager';
+import { EditarDialogComponent } from '../../editar-dialog/editar-dialog.component';
+import { ConsultarDialogPedComponent } from './consultar-dialog-ped/consultar-dialog-ped.component';
+import { CodigosEstados } from 'src/app/services/codigosEstados.service';
 
 @Component({
   selector: 'app-ped',
@@ -28,6 +29,7 @@ export class PedComponent implements OnInit{
   constructor(
     public dialog: MatDialog,
     private request: RequestManager,
+    private codigosService: CodigosEstados
   ) {
     this.loadData();
   }
@@ -199,7 +201,7 @@ export class PedComponent implements OnInit{
     this.request
       .get(
         environment.PLANES_CRUD,
-        `plan?query=tipo_plan_id:616513b91634adfaffed52bf`
+        `plan?query=tipo_plan_id:${this.codigosService.getIdTipoPlanDesarrolloEstrategico()}`
       )
       .subscribe({
         next: (data: DataRequest) => {
@@ -290,7 +292,7 @@ export class PedComponent implements OnInit{
   inactivar(fila: Plan):void{
     this.uid = fila._id;
     if (fila.activo){
-      if (fila.tipo_plan_id != '611af8464a34b3599e3799a2'){
+      if (fila.tipo_plan_id != this.codigosService.getIdTipoPlanProyecto()){
         this.deleteData();
       } else {
         let res = {

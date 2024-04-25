@@ -13,29 +13,8 @@ import Swal from 'sweetalert2';
 import { ImplicitAutenticationService } from 'src/app/@core/utils/implicit_autentication.service';
 import { environment } from 'src/environments/environment';
 import { DataRequestMID } from 'src/app/@core/models/dataRequest';
-
-interface Subgrupo {
-  activo: string;
-  nombre: string;
-  descripcion: string;
-  id: string;
-  children?: Subgrupo[];
-}
-
-// Objeto fila
-
-interface Nodo {
-  expandable: boolean;
-  activo: string;
-  nombre: string;
-  descripcion: string;
-  id: string;
-  level: number;
-  icon?: string;
-  idx?: number;
-  padre_idx?: number | undefined;
-  hijos_idx?: (number | undefined)[];
-}
+import { Nodo, Subgrupo } from 'src/app/@core/models/arbol';
+import { CodigosEstados } from 'src/app/services/codigosEstados.service';
 
 const Checked: string = 'done';
 const Unchecked: string = 'compare_arrows';
@@ -110,15 +89,20 @@ export class ArbolComponent implements OnInit{
   constructor(
     private formBuilder: FormBuilder,
     private request: RequestManager,
-    private autenticationService: ImplicitAutenticationService
-
+    private autenticationService: ImplicitAutenticationService,
+    private codigosService: CodigosEstados
   ) {
-    let roles: any = this.autenticationService.getRole();
-    if (roles.__zone_symbol__value.find((x: any) => x == 'JEFE_DEPENDENCIA' || x == 'ASISTENTE_DEPENDENCIA')) {
-      this.rol = 'JEFE_DEPENDENCIA'
-    } else if (roles.__zone_symbol__value.find((x: any) => x == 'PLANEACION')) {
-      this.rol = 'PLANEACION'
-    }
+    this.autenticationService.getRole().then((roles) => {
+      if (
+        roles.find(
+          (x) => x == 'JEFE_DEPENDENCIA' || x == 'ASISTENTE_DEPENDENCIA'
+        )
+      ) {
+        this.rol = 'JEFE_DEPENDENCIA';
+      } else if (roles.find((x) => x == 'PLANEACION')) {
+        this.rol = 'PLANEACION';
+      }
+    });
   }
 
   getErrorMessage(campo: FormControl) {
@@ -130,7 +114,7 @@ export class ArbolComponent implements OnInit{
   }
 
   ngOnChanges(changes: any) {
-    if (this.tipoPlanId !== '611af8464a34b3599e3799a2') {
+    if (this.tipoPlanId !== this.codigosService.getIdTipoPlanProyecto()) {
       if (this.idPlan !== this.planActual) {
         this.loadArbolMid();
         this.planActual = this.idPlan;
@@ -169,6 +153,7 @@ export class ArbolComponent implements OnInit{
       },
       error: (error) => {
         this.dataSource.data = [];
+        console.error(error);
         Swal.fire({
           title: 'Error en la operación',
           text: 'No se encontraron datos registrados',

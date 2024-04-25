@@ -9,6 +9,7 @@ import { Plan } from 'src/app/@core/models/plan';
 import { DataRequest } from 'src/app/@core/models/dataRequest';
 import { Vigencia } from 'src/app/@core/models/vigencia';
 import { DocumentRequest, Documento } from 'src/app/@core/models/document';
+import { CodigosEstados } from 'src/app/services/codigosEstados.service';
 
 @Component({
   selector: 'app-pui',
@@ -23,6 +24,7 @@ export class PuiComponent implements OnInit{
   constructor(
     private request: RequestManager,
     public dialog: MatDialog,
+    private codigosService: CodigosEstados
   ) {
     this.dataSource = new MatTableDataSource();
     this.loadData();
@@ -32,7 +34,7 @@ export class PuiComponent implements OnInit{
     this.request
       .get(
         environment.PLANES_CRUD,
-        `plan?query=tipo_plan_id:623cb06616511e41ef5d798c`
+        `plan?query=tipo_plan_id:${this.codigosService.getIdTipoPlanUniversitarioInstitucional()}`
       )
       .subscribe({
         next: (data: DataRequest) => {

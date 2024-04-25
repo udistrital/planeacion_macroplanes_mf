@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { environment } from 'src/environments/environment';
 import { Plan } from 'src/app/@core/models/plan';
 import { DataRequest, DataRequestMID } from 'src/app/@core/models/dataRequest';
+import { CodigosEstados } from 'src/app/services/codigosEstados.service';
 
 @Component({
   selector: 'app-consultar-pi',
@@ -28,6 +29,7 @@ export class ConsultarPiComponent implements OnInit{
   constructor(
     public dialog: MatDialog,
     private request: RequestManager,
+    private codigosService: CodigosEstados
   ) {
     this.loadData();
   }
@@ -202,12 +204,12 @@ export class ConsultarPiComponent implements OnInit{
     this.request
       .get(
         environment.PLANES_CRUD,
-        `plan?query=tipo_plan_id:6239117116511e20405d408b`
+        `plan?query=tipo_plan_id:${this.codigosService.getIdTipoPlanIndicativo()}`
       )
       .subscribe({
         next: (data: DataRequest) => {
           if (data) {
-            this.planes = data.Data as Plan[];
+            this.planes = data.Data;
             this.ajustarData();
           }
         },
@@ -244,6 +246,7 @@ export class ConsultarPiComponent implements OnInit{
         }
       },
       error: (error) => {
+        console.error(error);
         Swal.fire({
           title: 'Error en la operación',
           text: 'No se encontraron datos registrados',
@@ -284,7 +287,7 @@ export class ConsultarPiComponent implements OnInit{
   inactivar(fila: Plan):void{
     this.uid = fila._id;
     if (fila.activo){
-      if (fila.tipo_plan_id != '611af8464a34b3599e3799a2'){
+      if (fila.tipo_plan_id != this.codigosService.getIdTipoPlanProyecto()){
         this.deleteData();
       } else {
         let res = {
