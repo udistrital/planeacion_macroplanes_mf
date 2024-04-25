@@ -26,6 +26,7 @@ const No_Aplica: string = "no aplica"
   styleUrls: ['./arbol.component.scss']
 })
 export class ArbolComponent implements OnInit{
+  ID_TIPO_PLAN_PROYECTO!:string;
   selectedFiles: any;
   dataRow: any;
   formConstruirPUI!: FormGroup;
@@ -354,7 +355,9 @@ export class ArbolComponent implements OnInit{
 
   hasChild = (_: number, node: Nodo) => node.expandable;
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    await this.codigosService.cargarIdentificadores();
+    this.ID_TIPO_PLAN_PROYECTO = this.codigosService.getIdTipoPlanProyecto();
     this.formConstruirPUI = this.formBuilder.group({
       infoControl: ['', Validators.required],
       requiredfile: ['', Validators.required]

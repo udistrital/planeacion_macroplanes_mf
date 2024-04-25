@@ -31,7 +31,6 @@ export class ConsultarPiComponent implements OnInit{
     private request: RequestManager,
     private codigosService: CodigosEstados
   ) {
-    this.loadData();
   }
 
   applyFilter(event: Event) {
@@ -306,7 +305,8 @@ export class ConsultarPiComponent implements OnInit{
     }
   }
 
-  ngOnInit(): void {
-
+  async ngOnInit() {
+    await this.codigosService.cargarIdentificadores();
+    this.loadData();
   }
 }

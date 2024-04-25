@@ -1,4 +1,4 @@
-<ng-container *ngIf="tipoPlanId == '611af8464a34b3599e3799a2' && !consulta">
+<ng-container *ngIf="tipoPlanId == ID_TIPO_PLAN_PROYECTO && !consulta">
     <p>En este modulo se le permitirá registrar un PUI. Por favor tener a la mano la evidencia del acto administrativo.
       A continuación podrá ingresar la información deseada.
     </p>
@@ -38,7 +38,7 @@
   <!-- CONSTRUCCIÓN -->
 
   <ng-container
-    *ngIf="tipoPlanId != '611af8464a34b3599e3799a2' && mostrar && !consulta && (!armonizacionPED && !armonizacionPI)">
+    *ngIf="tipoPlanId != ID_TIPO_PLAN_PROYECTO && mostrar && !consulta && (!armonizacionPED && !armonizacionPI)">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <ng-container matColumnDef="nombre">
         <th mat-header-cell *matHeaderCellDef>
@@ -82,7 +82,7 @@
 
   <!-- CONSULTA -->
 
-  <ng-container *ngIf="tipoPlanId != '611af8464a34b3599e3799a2' && mostrar && consulta">
+  <ng-container *ngIf="tipoPlanId != ID_TIPO_PLAN_PROYECTO && mostrar && consulta">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <ng-container matColumnDef="nombre">
         <th mat-header-cell *matHeaderCellDef>
@@ -118,7 +118,7 @@
   <!-- ARMONIZACION -->
 
   <ng-container
-    *ngIf="tipoPlanId != '611af8464a34b3599e3799a2' && mostrar && !consulta && (armonizacionPED && !armonizacionPI) || (!armonizacionPED && armonizacionPI)">
+    *ngIf="tipoPlanId != ID_TIPO_PLAN_PROYECTO && mostrar && !consulta && (armonizacionPED && !armonizacionPI) || (!armonizacionPED && armonizacionPI)">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <ng-container matColumnDef="nombre">
         <th mat-header-cell *matHeaderCellDef>

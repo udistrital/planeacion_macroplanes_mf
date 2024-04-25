@@ -8,7 +8,7 @@ const ABREVIACIONES = {
     Proyecto: 'PR_SP',
     DesarrolloEstrategico: 'PD_SP',
     Indicativo: 'PLI_SP',
-    UniversitarioInstitucional: 'PUI_SP'
+    UniversitarioInstitucional: 'PUI_SP',
   },
 };
 
@@ -20,11 +20,9 @@ export class CodigosEstados {
   private idTipoPlanDesarrolloEstrategico = '';
   private idTipoPlanIndicativo = '';
   private idTipoPlanUniversitarioInstitucional = '';
-  private constructor(public request: RequestManager) {
-    this.cargarIdentificadores();
-  }
+  private constructor(public request: RequestManager) {}
 
-  private async cargarIdentificadores() {
+  public async cargarIdentificadores() {
     await new Promise((resolve) => {
       this.request
         .get(

@@ -27,7 +27,6 @@ export class PuiComponent implements OnInit{
     private codigosService: CodigosEstados
   ) {
     this.dataSource = new MatTableDataSource();
-    this.loadData();
   }
 
   loadData() {
@@ -164,6 +163,8 @@ export class PuiComponent implements OnInit{
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    await this.codigosService.cargarIdentificadores();
+    this.loadData();
   }
 }
