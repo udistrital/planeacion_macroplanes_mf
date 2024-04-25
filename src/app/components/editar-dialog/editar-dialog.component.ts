@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
-import { RequestManager } from '../services/requestManager';
+import { RequestManager } from '../../services/requestManager';
 import { MatRadioChange } from '@angular/material/radio';
 
 @Component({
@@ -65,7 +65,7 @@ export class EditarDialogComponent {
     disabled: false
   };
 
-  
+
   constructor(
     private formBuilder: FormBuilder,
     private cdRef: ChangeDetectorRef,
@@ -240,19 +240,22 @@ export class EditarDialogComponent {
   }
 
   loadTiposPlan() {
-    this.request.get(environment.PLANES_CRUD, `tipo-plan`).subscribe((data: any) => {
-      if (data) {
-        this.tiposPlanes = data.Data;
-      }
-    }, (error: any) => {
-      Swal.fire({
-        title: 'Error en la operación',
-        text: 'No se encontraron datos registrados',
-        icon: 'warning',
-        showConfirmButton: false,
-        timer: 2500
-      })
-    })
+    this.request.get(environment.PLANES_CRUD, `tipo-plan`).subscribe({
+      next: (data: any) => {
+        if (data) {
+          this.tiposPlanes = data.Data;
+        }
+      },
+      error: (error: any) => {
+        Swal.fire({
+          title: 'Error en la operación',
+          text: 'No se encontraron datos registrados',
+          icon: 'warning',
+          showConfirmButton: false,
+          timer: 2500,
+        });
+      },
+    });
   }
 }
 

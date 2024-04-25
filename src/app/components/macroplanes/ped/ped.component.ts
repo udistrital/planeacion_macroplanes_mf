@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { RequestManager } from '../../services/requestManager';
+import { RequestManager } from '../../../services/requestManager';
 import { ConsultarDialogPedComponent } from './consultar-dialog-ped/consultar-dialog-ped.component';
 import Swal from 'sweetalert2';
 import { environment } from 'src/environments/environment';
@@ -73,26 +73,31 @@ export class PedComponent implements OnInit{
 
   putData(res: any, bandera: any){
     if (bandera == 'editar'){
-      this.request.put(environment.PLANES_CRUD, `plan`, res, this.uid).subscribe((data: any) => {
-        if(data){
-          Swal.fire({
-            title: 'Actualización correcta',
-            text: `Se actualizaron correctamente los datos`,
-            icon: 'success',
-          }).then((result) => {
-            if (result.value) {
-              window.location.reload();
+      this.request
+        .put(environment.PLANES_CRUD, `plan`, res, this.uid)
+        .subscribe({
+          next: (data: any) => {
+            if (data) {
+              Swal.fire({
+                title: 'Actualización correcta',
+                text: `Se actualizaron correctamente los datos`,
+                icon: 'success',
+              }).then((result) => {
+                if (result.value) {
+                  window.location.reload();
+                }
+              });
             }
-          })
-        }
-      }, (error) => {
-        Swal.fire({
-          title: 'Error en la operación',
-          icon: 'error',
-          showConfirmButton: false,
-          timer: 2500
-        })
-      })
+          },
+          error: (error) => {
+            Swal.fire({
+              title: 'Error en la operación',
+              icon: 'error',
+              showConfirmButton: false,
+              timer: 2500,
+            });
+          },
+        });
     } else if (bandera == 'activo') {
       Swal.fire({
         title: 'Inhabilitar plan',
@@ -102,25 +107,30 @@ export class PedComponent implements OnInit{
         cancelButtonText: `No`,
       }).then((result) => {
           if (result.isConfirmed) {
-            this.request.put(environment.PLANES_CRUD, `plan`, res, this.uid).subscribe((data: any) => {
-              if (data){
-                Swal.fire({
-                  title: 'Cambio realizado',
-                  icon: 'success',
-                }).then((result) => {
-                  if (result.value) {
-                    window.location.reload();
+            this.request
+              .put(environment.PLANES_CRUD, `plan`, res, this.uid)
+              .subscribe({
+                next: (data: any) => {
+                  if (data) {
+                    Swal.fire({
+                      title: 'Cambio realizado',
+                      icon: 'success',
+                    }).then((result) => {
+                      if (result.value) {
+                        window.location.reload();
+                      }
+                    });
                   }
-                })
-              }
-            }, (error) => {
-              Swal.fire({
-                title: 'Error en la operación',
-                icon: 'error',
-                showConfirmButton: false,
-                timer: 2500
-              })
-            })
+                },
+                error: (error) => {
+                  Swal.fire({
+                    title: 'Error en la operación',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 2500,
+                  });
+                },
+              });
           } else if (result.dismiss === Swal.DismissReason.cancel) {
             Swal.fire({
               title: 'Cambio cancelado',
@@ -143,25 +153,33 @@ export class PedComponent implements OnInit{
       cancelButtonText: `No`,
     }).then((result) => {
         if (result.isConfirmed) {
-          this.request.delete(environment.PLANES_MID, `arbol/desactivar_plan`, this.uid).subscribe((data: any) => {
-            if(data){
-              Swal.fire({
-                title: 'Cambio realizado',
-                icon: 'success',
-              }).then((result) => {
-                if (result.value) {
-                  window.location.reload();
+          this.request
+            .delete(
+              environment.PLANEACION_ARBOL_MID,
+              `arbol/plan/${this.uid}/desactivar`
+            )
+            .subscribe({
+              next: (data: any) => {
+                if (data) {
+                  Swal.fire({
+                    title: 'Cambio realizado',
+                    icon: 'success',
+                  }).then((result) => {
+                    if (result.value) {
+                      window.location.reload();
+                    }
+                  });
                 }
-              })
-            }
-          }, (error) => {
-            Swal.fire({
-              title: 'Error en la operación',
-              icon: 'error',
-              showConfirmButton: false,
-              timer: 2500
-            })
-          })
+              },
+              error: (error) => {
+                Swal.fire({
+                  title: 'Error en la operación',
+                  icon: 'error',
+                  showConfirmButton: false,
+                  timer: 2500,
+                });
+              },
+            });
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           Swal.fire({
             title: 'Cambio cancelado',
@@ -174,21 +192,28 @@ export class PedComponent implements OnInit{
   }
 
   loadData(){
-    this.request.get(environment.PLANES_CRUD, `plan?query=tipo_plan_id:616513b91634adfaffed52bf`).subscribe((data: any) => {
-      if (data){
-        this.planes = data.Data;
-        this.ajustarData();
-      }
-    },(error) => {
-      Swal.fire({
-        title: 'Error en la operación',
-        text: 'No se encontraron datos registrados',
-        icon: 'warning',
-        showConfirmButton: false,
-        timer: 2500
-      })
-
-    })
+    this.request
+      .get(
+        environment.PLANES_CRUD,
+        `plan?query=tipo_plan_id:616513b91634adfaffed52bf`
+      )
+      .subscribe({
+        next: (data: any) => {
+          if (data) {
+            this.planes = data.Data;
+            this.ajustarData();
+          }
+        },
+        error: (error) => {
+          Swal.fire({
+            title: 'Error en la operación',
+            text: 'No se encontraron datos registrados',
+            icon: 'warning',
+            showConfirmButton: false,
+            timer: 2500,
+          });
+        },
+      });
   }
 
   ajustarData(){
@@ -201,56 +226,64 @@ export class PedComponent implements OnInit{
 
   editar(fila: any): void{
     this.uid = fila._id;
-    this.request.get(environment.PLANES_CRUD, `plan/`+this.uid).subscribe((data: any) => {
-      if(data){
-        this.plan = data.Data;
-        let subgrupoDetalle={
-          type: "",
-          required: false
+    this.request.get(environment.PLANES_CRUD, `plan/${this.uid}`).subscribe({
+      next: (data: any) => {
+        if (data) {
+          this.plan = data.Data;
+          let subgrupoDetalle = {
+            type: '',
+            required: false,
+          };
+          this.openDialogEditar(this.plan, subgrupoDetalle);
         }
-        this.openDialogEditar(this.plan, subgrupoDetalle);
-      }
-    }, (error) => {
-      Swal.fire({
-        title: 'Error en la operación',
-        text: 'No se encontraron datos registrados',
-        icon: 'warning',
-        showConfirmButton: false,
-        timer: 2500
-      })
-    })
+      },
+      error: (error) => {
+        console.error(error);
+        Swal.fire({
+          title: 'Error en la operación',
+          text: 'No se encontraron datos registrados',
+          icon: 'warning',
+          showConfirmButton: false,
+          timer: 2500,
+        });
+      },
+    });
   }
 
   consultar(fila: any): void{
     this.uid = fila._id;
-    this.request.get(environment.PLANES_CRUD, `plan/`+this.uid).subscribe((data: any) => {
-      if (data && data.Data && Array.isArray(data.Data.structuredData)) {
-        // Verifica si hay datos y si data.Data no es nulo ni está vacío
-        this.plan = data.Data;
-        let subgrupoDetalle={
-          type: "",
-          required: false
+    this.request.get(environment.PLANES_CRUD, `plan/${this.uid}`).subscribe({
+      next: (data: any) => {
+        if (data && data.Data && Array.isArray(data.Data.structuredData)) {
+          // Verifica si hay datos y si data.Data no es nulo ni está vacío
+          this.plan = data.Data;
+          let subgrupoDetalle = {
+            type: '',
+            required: false,
+          };
+          this.openDialogConsultar(this.plan, subgrupoDetalle);
+        } else {
+          Swal.fire({
+            title: 'No hay datos relacionados',
+            text: 'No existe información para el plan señalado.',
+            icon: 'info',
+            showConfirmButton: false,
+            timer: 2500,
+          });
         }
-        this.openDialogConsultar(this.plan, subgrupoDetalle);
-      } else {
+      },
+      error: (error) => {
+        console.error(error);
+        // Maneja el caso de error en la solicitud HTTP GET
         Swal.fire({
-          title: 'No hay datos relacionados',
-          text: 'No existe información para el plan señalado.',
-          icon: 'info',
+          title: 'Error en la operación',
+          text: 'No se encontraron datos registrados',
+          icon: 'warning',
           showConfirmButton: false,
-          timer: 2500
+          timer: 2500,
         });
-      }
-    },(error) => {
-      // Maneja el caso de error en la solicitud HTTP GET
-      Swal.fire({
-        title: 'Error en la operación',
-        text: 'No se encontraron datos registrados',
-        icon: 'warning',
-        showConfirmButton: false,
-        timer: 2500
-      })
-    })
+      },
+    });
   }
 
   inactivar(fila: any):void{
@@ -263,7 +296,7 @@ export class PedComponent implements OnInit{
           activo: false,
         }
         this.putData(res, 'activo')
-      } 
+      }
     } else if (fila.activo == 'Inactivo'){
       Swal.fire({
         title: 'Plan ya inactivo',

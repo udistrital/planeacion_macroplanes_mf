@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { RequestManager } from '../../services/requestManager';
+import { RequestManager } from '../../../services/requestManager';
 import { MatDialog } from '@angular/material/dialog';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
@@ -25,40 +25,56 @@ export class PuiComponent implements OnInit{
   }
 
   loadData() {
-    this.request.get(environment.PLANES_CRUD, `plan?query=tipo_plan_id:623cb06616511e41ef5d798c`).subscribe((data: any) => {
-      if (data) {
-        this.planes = data.Data;
-        this.getVigencias();
-        this.dataSource.data = this.planes;
-      }
-    }, (error) => {
-      Swal.fire({
-        title: 'Error en la operación',
-        text: 'No se encontraron datos registrados',
-        icon: 'warning',
-        showConfirmButton: false,
-        timer: 2500
-      })
-    })
-  }
-
-  getVigencias() {
-    for (let i = 0; i < this.planes.length; i++) {
-      if (this.planes[i].vigencia != undefined)
-        this.request.get(environment.PARAMETROS_SERVICE, `periodo?query=Id:` + this.planes[i].vigencia).subscribe((data: any) => {
+    this.request
+      .get(
+        environment.PLANES_CRUD,
+        `plan?query=tipo_plan_id:623cb06616511e41ef5d798c`
+      )
+      .subscribe({
+        next: (data: any) => {
           if (data) {
-            let vigencia: any = data.Data[0];
-            this.planes[i].vigencia = vigencia.Nombre;
+            this.planes = data.Data;
+            this.getVigencias();
+            this.dataSource.data = this.planes;
           }
-        }, (error) => {
+        },
+        error: (error) => {
           Swal.fire({
             title: 'Error en la operación',
             text: 'No se encontraron datos registrados',
             icon: 'warning',
             showConfirmButton: false,
-            timer: 2500
-          })
-        })
+            timer: 2500,
+          });
+        },
+      });
+  }
+
+  getVigencias() {
+    for (let i = 0; i < this.planes.length; i++) {
+      if (this.planes[i].vigencia != undefined)
+        this.request
+          .get(
+            environment.PARAMETROS_SERVICE,
+            `periodo?query=Id:` + this.planes[i].vigencia
+          )
+          .subscribe({
+            next: (data: any) => {
+              if (data) {
+                let vigencia: any = data.Data[0];
+                this.planes[i].vigencia = vigencia.Nombre;
+              }
+            },
+            error: (error) => {
+              Swal.fire({
+                title: 'Error en la operación',
+                text: 'No se encontraron datos registrados',
+                icon: 'warning',
+                showConfirmButton: false,
+                timer: 2500,
+              });
+            },
+          });
     }
   }
 
@@ -118,26 +134,30 @@ export class PuiComponent implements OnInit{
         Swal.showLoading();
       },
     })
-    this.request.get(environment.GESTOR_DOCUMENTAL_MID, `document/` + documentoId).subscribe((data: any) => {
-      if (data) {
-        documento = {
-          name: data["dc:title"],
-          size: data["file:content"]["length"],
-          type: data["file:content"]["mime-type"],
-          uid: documentoId,
-          file: data["file"]
-        }
-        resolveRef(documento)
-      } else {
-        Swal.fire({
-          title: 'Error al cargar documento',
-          icon: 'warning',
-          showConfirmButton: false,
-          timer: 2500
-        })
-        rejectRef(undefined);
-      }
-    })
+    this.request
+      .get(environment.GESTOR_DOCUMENTAL_MID, `document/` + documentoId)
+      .subscribe({
+        next: (data: any) => {
+          if (data) {
+            documento = {
+              name: data['dc:title'],
+              size: data['file:content']['length'],
+              type: data['file:content']['mime-type'],
+              uid: documentoId,
+              file: data['file'],
+            };
+            resolveRef(documento);
+          } else {
+            Swal.fire({
+              title: 'Error al cargar documento',
+              icon: 'warning',
+              showConfirmButton: false,
+              timer: 2500,
+            });
+            rejectRef(undefined);
+          }
+        },
+      });
     return dataPromise;
   }
 

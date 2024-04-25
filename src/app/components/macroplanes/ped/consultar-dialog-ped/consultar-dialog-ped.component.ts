@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { RequestManager } from 'src/app/components/services/requestManager';
+import { RequestManager } from 'src/app/services/requestManager';
 
 @Component({
   selector: 'app-consultar-dialog-ped',
@@ -21,8 +21,7 @@ export class ConsultarDialogPedComponent implements OnInit{
 
   constructor(
     private formBuilder: FormBuilder,
-    private request: RequestManager,
-    @Inject(MAT_DIALOG_DATA) public data: any 
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.nombre = data.sub.nombre;
     this.descripcion = data.sub.descripcion;

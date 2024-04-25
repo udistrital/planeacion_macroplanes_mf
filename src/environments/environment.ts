@@ -6,7 +6,7 @@ export const environment = {
     production: false,
     apiUrl:"http://localhost:4207/",
     PLANES_CRUD: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8523/',
-    PLANES_MID: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8524/v1/',
+    PLANEACION_ARBOL_MID: 'http://pruebasapi.intranetoas.udistrital.edu.co:8550/v1/',
     PARAMETROS_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8510/v1/',
     GESTOR_DOCUMENTAL_MID: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8199/v1/',
     OIKOS_SERVICE: 'http://api.intranetoas.udistrital.edu.co:8087/v1/',

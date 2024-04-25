@@ -67,7 +67,7 @@ export class RequestManager {
 
   /**
    * Perform a POST http request
-   * 
+   *
    * @param path service's path from environment end-point
    * @param endpoint service's end-point
    * @param element data to send as JSON
@@ -109,10 +109,10 @@ export class RequestManager {
    * @param id element's id for remove
    * @returns Observable<any>
    */
-  delete(path: any, endpoint: any, id: any) {
+  delete(path: any, endpoint: any) {
     return this.header$.pipe(
       mergeMap(header => {
-        return this.http.delete<any>(`${path}${endpoint}/${id}`, header).pipe(
+        return this.http.delete<any>(`${path}${endpoint}`, header).pipe(
           catchError(this.errManager.handleError),
         );
       })

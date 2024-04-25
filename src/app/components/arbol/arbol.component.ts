@@ -8,7 +8,7 @@ import {
   MatTreeFlatDataSource,
   MatTreeFlattener
 } from '@angular/material/tree';
-import { RequestManager } from '../services/requestManager';
+import { RequestManager } from '../../services/requestManager';
 import Swal from 'sweetalert2';
 import { ImplicitAutenticationService } from 'src/app/@core/utils/implicit_autentication.service';
 import { environment } from 'src/environments/environment';
@@ -152,28 +152,31 @@ export class ArbolComponent implements OnInit{
         Swal.showLoading();
       },
     })
-    this.request.get(environment.PLANES_MID, `arbol/` + this.idPlan).subscribe((data: any) => {
-      Swal.close();
-      if (data.Data !== null) {
-        this.mostrar = true;
-        this.dataSource.data = data.Data;
-        if (this.armonizacionPED || this.armonizacionPI) {
-          this.linksArbol()
-          this.expandNodes()
+    this.request.get(environment.PLANEACION_ARBOL_MID, `arbol/${this.idPlan}`).subscribe({
+      next: (data: any) => {
+        Swal.close();
+        if (data.Data !== null) {
+          this.mostrar = true;
+          this.dataSource.data = data.Data;
+          if (this.armonizacionPED || this.armonizacionPI) {
+            this.linksArbol();
+            this.expandNodes();
+          }
+        } else {
+          this.dataSource.data = [];
         }
-      } else {
+      },
+      error: (error) => {
         this.dataSource.data = [];
-      }
-    }, (error) => {
-      this.dataSource.data = [];
-      Swal.fire({
-        title: 'Error en la operación',
-        text: 'No se encontraron datos registrados',
-        icon: 'warning',
-        showConfirmButton: false,
-        timer: 2500
-      })
-    })
+        Swal.fire({
+          title: 'Error en la operación',
+          text: 'No se encontraron datos registrados',
+          icon: 'warning',
+          showConfirmButton: false,
+          timer: 2500,
+        });
+      },
+    });
   }
 
   linksArbol() {

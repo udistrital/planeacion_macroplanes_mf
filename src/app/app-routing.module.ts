@@ -19,47 +19,56 @@ import { PuiComponent } from './components/macroplanes/pui/pui.component';
 const routes: Routes = [
   {
     path: "ped",
-    component: PedComponent
+    component: PedComponent,
+    children: [
+      {
+        path: "seguimiento",
+        component: SeguimientoPedComponent
+      },
+      {
+        path: "evaluacion",
+        component: EvaluacionPedComponent
+      },
+    ]
   },
   {
-    path: "seguimiento-ped",
-    component: SeguimientoPedComponent
+    path: "pi",
+    component: ConsultarPiComponent,
+    children: [
+      {
+        path: "seguimiento",
+        component: SeguimientoPiComponent
+      },
+      {
+        path: "evaluacion",
+        component: EvaluacionPiComponent
+      },
+    ]
+  },
+
+  {
+    path: "poa",
+    component: ConsultarPoaComponent,
+    children: [
+      {
+        path: "evaluacion",
+        component: EvaluacionPoaComponent
+      },
+    ]
   },
   {
-    path: "evaluacion-ped",
-    component: EvaluacionPedComponent
-  },
-  {
-    path: "consultar-pi",
-    component: ConsultarPiComponent
-  },
-  {
-    path: "seguimiento-pi",
-    component: SeguimientoPiComponent
-  },
-  {
-    path: "evaluacion-pi",
-    component: EvaluacionPiComponent
-  },
-  {
-    path: "consultar-poa",
-    component: ConsultarPoaComponent
-  },
-  {
-    path: "evaluacion-poa",
-    component: EvaluacionPoaComponent
-  },
-  {
-    path: "construccion-pmee",
-    component: ConstruccionPmeeComponent
-  },
-  {
-    path: "seguimiento-pmee",
-    component: SeguimientoPmeeComponent
-  },
-  {
-    path: "evaluacion-pmee",
-    component: EvaluacionPmeeComponent,
+    path: "pmee",
+    component: SeguimientoPmeeComponent,
+    children: [
+      {
+        path: "construccion",
+        component: ConstruccionPmeeComponent
+      },
+      {
+        path: "evaluacion",
+        component: EvaluacionPmeeComponent,
+      },
+    ]
   },
   {
     path: "pui",
