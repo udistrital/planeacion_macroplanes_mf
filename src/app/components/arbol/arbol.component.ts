@@ -12,6 +12,7 @@ import { RequestManager } from '../../services/requestManager';
 import Swal from 'sweetalert2';
 import { ImplicitAutenticationService } from 'src/app/@core/utils/implicit_autentication.service';
 import { environment } from 'src/environments/environment';
+import { DataRequestMID } from 'src/app/@core/models/dataRequest';
 
 interface Subgrupo {
   activo: string;
@@ -153,11 +154,11 @@ export class ArbolComponent implements OnInit{
       },
     })
     this.request.get(environment.PLANEACION_ARBOL_MID, `arbol/${this.idPlan}`).subscribe({
-      next: (data: any) => {
+      next: (data: DataRequestMID) => {
         Swal.close();
-        if (data.Data !== null) {
+        if (data.data !== null) {
           this.mostrar = true;
-          this.dataSource.data = data.Data;
+          this.dataSource.data = data.data;
           if (this.armonizacionPED || this.armonizacionPI) {
             this.linksArbol();
             this.expandNodes();

@@ -5,6 +5,8 @@ import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 import { RequestManager } from '../../services/requestManager';
 import { MatRadioChange } from '@angular/material/radio';
+import { DataRequest } from 'src/app/@core/models/dataRequest';
+import { TipoPlan } from 'src/app/@core/models/tipoPlan';
 
 @Component({
   selector: 'app-editar-dialog',
@@ -28,7 +30,7 @@ export class EditarDialogComponent {
   banderaTablaS!: string;
   nivel!: number;
   opt!: boolean;
-  tiposPlanes!: any[];
+  tiposPlanes!: TipoPlan[];
 
   vTipo!: boolean;
   vRequired!: boolean;
@@ -241,12 +243,13 @@ export class EditarDialogComponent {
 
   loadTiposPlan() {
     this.request.get(environment.PLANES_CRUD, `tipo-plan`).subscribe({
-      next: (data: any) => {
+      next: (data: DataRequest) => {
         if (data) {
           this.tiposPlanes = data.Data;
         }
       },
-      error: (error: any) => {
+      error: (error) => {
+        console.error(error);
         Swal.fire({
           title: 'Error en la operación',
           text: 'No se encontraron datos registrados',
@@ -259,7 +262,7 @@ export class EditarDialogComponent {
   }
 }
 
-interface tipoDato {
+type tipoDato = {
   value: string;
   viewValue: string;
 }

@@ -20,10 +20,6 @@ export class RequestManager {
   public header$ = this.headerSubject.asObservable();
 
   constructor(private http: HttpClient, private errManager: HttpErrorManager) {
-    this.updateHeaderToken();
-  }
-
-  updateHeaderToken() {
     const access_token = localStorage.getItem('access_token');
     if (access_token) {
       this.headerSubject.next({
@@ -34,8 +30,6 @@ export class RequestManager {
       })
     }
   }
-
-
 
   /**
    * Perform a GET http request

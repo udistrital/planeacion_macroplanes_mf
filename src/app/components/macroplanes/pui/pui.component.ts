@@ -5,6 +5,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 import { VisualizarDocumentoDialogComponent } from '../../visualizar-documento-dialog/visualizar-documento-dialog.component';
+import { Plan } from 'src/app/@core/models/plan';
+import { DataRequest } from 'src/app/@core/models/dataRequest';
+import { Vigencia } from 'src/app/@core/models/vigencia';
+import { DocumentRequest, Documento } from 'src/app/@core/models/document';
 
 @Component({
   selector: 'app-pui',
@@ -13,8 +17,8 @@ import { VisualizarDocumentoDialogComponent } from '../../visualizar-documento-d
 })
 export class PuiComponent implements OnInit{
   displayedColumns: string[] = ['Vigencia', 'Nombre', 'Descripcion', 'Soporte'];
-  dataSource!: MatTableDataSource<any>;
-  planes!: any[];
+  dataSource!: MatTableDataSource<Plan>;
+  planes!: Plan[];
 
   constructor(
     private request: RequestManager,
@@ -31,14 +35,15 @@ export class PuiComponent implements OnInit{
         `plan?query=tipo_plan_id:623cb06616511e41ef5d798c`
       )
       .subscribe({
-        next: (data: any) => {
+        next: (data: DataRequest) => {
           if (data) {
-            this.planes = data.Data;
+            this.planes = data.Data as Plan[];
             this.getVigencias();
             this.dataSource.data = this.planes;
           }
         },
         error: (error) => {
+          console.error(error);
           Swal.fire({
             title: 'Error en la operación',
             text: 'No se encontraron datos registrados',
@@ -56,16 +61,17 @@ export class PuiComponent implements OnInit{
         this.request
           .get(
             environment.PARAMETROS_SERVICE,
-            `periodo?query=Id:` + this.planes[i].vigencia
+            `periodo?query=Id:${this.planes[i].vigencia}`
           )
           .subscribe({
-            next: (data: any) => {
+            next: (data: DataRequest) => {
               if (data) {
-                let vigencia: any = data.Data[0];
+                let vigencia: Vigencia  = data.Data[0];
                 this.planes[i].vigencia = vigencia.Nombre;
               }
             },
             error: (error) => {
+              console.error(error);
               Swal.fire({
                 title: 'Error en la operación',
                 text: 'No se encontraron datos registrados',
@@ -78,19 +84,20 @@ export class PuiComponent implements OnInit{
     }
   }
 
-  revisarDocumento(documentoId: any) {
+  revisarDocumento(documentoId: string) {
     let header = "data:application/pdf;base64,";
     let documentoBase64: string;
-    if (documentoId != "") {
-      this.loadDocumento(documentoId).then((documento: any) => {
-        if (documento["file"] == undefined) {
+    if (documentoId !== "") {
+      this.loadDocumento(documentoId).then((documento: Documento) => {
+        if (documento.file === undefined) {
           const file = documento;
           const reader = new FileReader();
+          // @ts-ignore
           reader.readAsDataURL(file);
           reader.onload = () => {
             let aux = new String(reader.result);
             documentoBase64 = aux.replace(header, "");
-            const dialogRef = this.dialog.open(VisualizarDocumentoDialogComponent, {
+            this.dialog.open(VisualizarDocumentoDialogComponent, {
               width: '1200',
               minHeight: 'calc(100vh - 90px)',
               height: '80%',
@@ -98,7 +105,7 @@ export class PuiComponent implements OnInit{
             });
           }
         } else {
-          const dialogRef = this.dialog.open(VisualizarDocumentoDialogComponent, {
+          this.dialog.open(VisualizarDocumentoDialogComponent, {
             width: '1000px',
             minHeight: 'calc(100vh - 90px)',
             height: '80%',
@@ -118,14 +125,6 @@ export class PuiComponent implements OnInit{
   }
 
   loadDocumento(documentoId: string) {
-    let message: string = '';
-    let resolveRef: any;
-    let rejectRef: any;
-    let dataPromise: Promise<string> = new Promise((resolve, reject) => {
-      resolveRef = resolve;
-      rejectRef = reject;
-    });
-    let documento: any;
     Swal.fire({
       title: 'Cargando documento',
       timerProgressBar: true,
@@ -134,31 +133,33 @@ export class PuiComponent implements OnInit{
         Swal.showLoading();
       },
     })
-    this.request
-      .get(environment.GESTOR_DOCUMENTAL_MID, `document/` + documentoId)
-      .subscribe({
-        next: (data: any) => {
-          if (data) {
-            documento = {
-              name: data['dc:title'],
-              size: data['file:content']['length'],
-              type: data['file:content']['mime-type'],
-              uid: documentoId,
-              file: data['file'],
-            };
-            resolveRef(documento);
-          } else {
-            Swal.fire({
-              title: 'Error al cargar documento',
-              icon: 'warning',
-              showConfirmButton: false,
-              timer: 2500,
-            });
-            rejectRef(undefined);
-          }
-        },
-      });
-    return dataPromise;
+    let documento: Documento;
+    return new Promise<Documento>((resolve, reject) => {
+      this.request
+        .get(environment.GESTOR_DOCUMENTAL_MID, `document/${documentoId}`)
+        .subscribe({
+          next: (data: DocumentRequest) => {
+            if (data) {
+              documento = {
+                name: data['dc:title'],
+                size: data['file:content'].length,
+                type: data['file:content']['mime-type'],
+                uid: documentoId,
+                file: data.file,
+              };
+              resolve(documento);
+            } else {
+              Swal.fire({
+                title: 'Error al cargar documento',
+                icon: 'warning',
+                showConfirmButton: false,
+                timer: 2500,
+              });
+              reject(undefined);
+            }
+          },
+        });
+    });
   }
 
   ngOnInit(): void {

@@ -8,6 +8,8 @@ import { ConsultarDialogPedComponent } from './consultar-dialog-ped/consultar-di
 import Swal from 'sweetalert2';
 import { environment } from 'src/environments/environment';
 import { EditarDialogComponent } from '../../editar-dialog/editar-dialog.component';
+import { Plan } from 'src/app/@core/models/plan';
+import { DataRequest, DataRequestMID } from 'src/app/@core/models/dataRequest';
 
 @Component({
   selector: 'app-ped',
@@ -16,10 +18,10 @@ import { EditarDialogComponent } from '../../editar-dialog/editar-dialog.compone
 })
 export class PedComponent implements OnInit{
   displayedColumns: string[] = ['nombre', 'descripcion', 'activo', 'actions'];
-  dataSource!: MatTableDataSource<any>;
-  uid!: number; // id del objeto
-  planes!: any[];
-  plan: any;
+  dataSource!: MatTableDataSource<Plan>;
+  uid!: string; // id del objeto
+  planes!: Plan[];
+  plan!: Plan;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -71,12 +73,12 @@ export class PedComponent implements OnInit{
     });
   }
 
-  putData(res: any, bandera: any){
+  putData(res: any, bandera: string){
     if (bandera == 'editar'){
       this.request
         .put(environment.PLANES_CRUD, `plan`, res, this.uid)
         .subscribe({
-          next: (data: any) => {
+          next: (data: DataRequest) => {
             if (data) {
               Swal.fire({
                 title: 'Actualización correcta',
@@ -110,7 +112,7 @@ export class PedComponent implements OnInit{
             this.request
               .put(environment.PLANES_CRUD, `plan`, res, this.uid)
               .subscribe({
-                next: (data: any) => {
+                next: (data: DataRequest) => {
                   if (data) {
                     Swal.fire({
                       title: 'Cambio realizado',
@@ -123,6 +125,7 @@ export class PedComponent implements OnInit{
                   }
                 },
                 error: (error) => {
+                  console.error(error);
                   Swal.fire({
                     title: 'Error en la operación',
                     icon: 'error',
@@ -159,7 +162,7 @@ export class PedComponent implements OnInit{
               `arbol/plan/${this.uid}/desactivar`
             )
             .subscribe({
-              next: (data: any) => {
+              next: (data: DataRequestMID) => {
                 if (data) {
                   Swal.fire({
                     title: 'Cambio realizado',
@@ -172,6 +175,7 @@ export class PedComponent implements OnInit{
                 }
               },
               error: (error) => {
+                console.error(error);
                 Swal.fire({
                   title: 'Error en la operación',
                   icon: 'error',
@@ -198,13 +202,16 @@ export class PedComponent implements OnInit{
         `plan?query=tipo_plan_id:616513b91634adfaffed52bf`
       )
       .subscribe({
-        next: (data: any) => {
+        next: (data: DataRequest) => {
           if (data) {
             this.planes = data.Data;
-            this.ajustarData();
+            this.dataSource = new MatTableDataSource(this.planes);
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
           }
         },
         error: (error) => {
+          console.error(error);
           Swal.fire({
             title: 'Error en la operación',
             text: 'No se encontraron datos registrados',
@@ -216,18 +223,12 @@ export class PedComponent implements OnInit{
       });
   }
 
-  ajustarData(){
-    this.cambiarValor("activo", true, "Activo")
-    this.cambiarValor("activo", false, "Inactivo")
-    this.dataSource = new MatTableDataSource(this.planes);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  editar(fila: any): void{
+  editar(fila: Plan): void{
+    alert(fila._id)
+    console.log(JSON.stringify(fila));
     this.uid = fila._id;
     this.request.get(environment.PLANES_CRUD, `plan/${this.uid}`).subscribe({
-      next: (data: any) => {
+      next: (data: DataRequest) => {
         if (data) {
           this.plan = data.Data;
           let subgrupoDetalle = {
@@ -250,11 +251,11 @@ export class PedComponent implements OnInit{
     });
   }
 
-  consultar(fila: any): void{
+  consultar(fila: Plan): void{
     this.uid = fila._id;
     this.request.get(environment.PLANES_CRUD, `plan/${this.uid}`).subscribe({
-      next: (data: any) => {
-        if (data && data.Data && Array.isArray(data.Data.structuredData)) {
+      next: (data: DataRequest) => {
+        if (data && data.Data) {
           // Verifica si hay datos y si data.Data no es nulo ni está vacío
           this.plan = data.Data;
           let subgrupoDetalle = {
@@ -286,18 +287,18 @@ export class PedComponent implements OnInit{
     });
   }
 
-  inactivar(fila: any):void{
+  inactivar(fila: Plan):void{
     this.uid = fila._id;
-    if (fila.activo == 'Activo'){
+    if (fila.activo){
       if (fila.tipo_plan_id != '611af8464a34b3599e3799a2'){
         this.deleteData();
-      } else if (fila.tipo_plan_id == '611af8464a34b3599e3799a2'){
+      } else {
         let res = {
           activo: false,
         }
         this.putData(res, 'activo')
       }
-    } else if (fila.activo == 'Inactivo'){
+    } else {
       Swal.fire({
         title: 'Plan ya inactivo',
         text: `El plan ya se encuentra en estado inactivo`,
@@ -306,12 +307,6 @@ export class PedComponent implements OnInit{
         timer: 2500
       });
     }
-  }
-
-  cambiarValor(valorABuscar: any, valorViejo: any, valorNuevo: any) {
-    this.planes.forEach(function(elemento) {
-      elemento[valorABuscar] = elemento[valorABuscar] == valorViejo ? valorNuevo : elemento[valorABuscar]
-    })
   }
 
   ngOnInit(): void {

@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Plan } from 'src/app/@core/models/plan';
 import { RequestManager } from 'src/app/services/requestManager';
 
 @Component({
@@ -15,10 +16,6 @@ export class ConsultarDialogPedComponent implements OnInit{
   tipoPlan: string;
   planId: string;
 
-  tipoPlanId!: string; // id tipo plan
-  idPadre!: string; // id padre del objeto
-  planes!: any[];
-
   constructor(
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -27,10 +24,6 @@ export class ConsultarDialogPedComponent implements OnInit{
     this.descripcion = data.sub.descripcion;
     this.tipoPlan = data.sub.tipo_plan_id;
     this.planId = data.sub._id;
-  }
-
-  filterActivos(data: any) {
-    return data.filter((e: { activo: boolean; }) => e.activo == true);
   }
 
   ngOnInit(): void {
