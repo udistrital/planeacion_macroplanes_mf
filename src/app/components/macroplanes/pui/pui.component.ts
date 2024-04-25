@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { RequestManager } from '../../../services/requestManager';
+import { RequestManager } from '../../../@core/services/requestManager';
 import { MatDialog } from '@angular/material/dialog';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
@@ -9,7 +9,7 @@ import { Plan } from 'src/app/@core/models/plan';
 import { DataRequest } from 'src/app/@core/models/dataRequest';
 import { Vigencia } from 'src/app/@core/models/vigencia';
 import { DocumentRequest, Documento } from 'src/app/@core/models/document';
-import { CodigosEstados } from 'src/app/services/codigosEstados.service';
+import { CodigosService, TIPO_PLAN } from 'src/app/@core/services/codigosEstados.service';
 
 @Component({
   selector: 'app-pui',
@@ -24,7 +24,7 @@ export class PuiComponent implements OnInit{
   constructor(
     private request: RequestManager,
     public dialog: MatDialog,
-    private codigosService: CodigosEstados
+    private codigosService: CodigosService
   ) {
     this.dataSource = new MatTableDataSource();
   }
@@ -33,7 +33,7 @@ export class PuiComponent implements OnInit{
     this.request
       .get(
         environment.PLANES_CRUD,
-        `plan?query=tipo_plan_id:${this.codigosService.getIdTipoPlanUniversitarioInstitucional()}`
+        `plan?query=tipo_plan_id:${this.codigosService.getCodigo(TIPO_PLAN.UniversitarioInstitucional)}`
       )
       .subscribe({
         next: (data: DataRequest) => {

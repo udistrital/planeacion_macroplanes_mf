@@ -135,7 +135,7 @@ export class ImplicitAutenticationService {
                     ...{ userService: res },
                   });
                 },
-                error: (error) => console.log(error),
+                error: (error) => console.error(error),
               });
             this.httpOptions = {
               headers: new HttpHeaders({

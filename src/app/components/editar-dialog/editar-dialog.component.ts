@@ -6,7 +6,7 @@ import { DataRequest } from 'src/app/@core/models/dataRequest';
 import { TipoPlan } from 'src/app/@core/models/tipoPlan';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
-import { RequestManager } from '../../services/requestManager';
+import { RequestManager } from '../../@core/services/requestManager';
 
 @Component({
   selector: 'app-editar-dialog',

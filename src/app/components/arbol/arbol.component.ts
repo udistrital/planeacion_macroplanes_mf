@@ -8,13 +8,13 @@ import {
   MatTreeFlatDataSource,
   MatTreeFlattener
 } from '@angular/material/tree';
-import { RequestManager } from '../../services/requestManager';
+import { RequestManager } from '../../@core/services/requestManager';
 import Swal from 'sweetalert2';
 import { ImplicitAutenticationService } from 'src/app/@core/utils/implicit_autentication.service';
 import { environment } from 'src/environments/environment';
 import { DataRequestMID } from 'src/app/@core/models/dataRequest';
 import { Nodo, Subgrupo } from 'src/app/@core/models/arbol';
-import { CodigosEstados } from 'src/app/services/codigosEstados.service';
+import { CodigosService, TIPO_PLAN } from 'src/app/@core/services/codigosEstados.service';
 
 const Checked: string = 'done';
 const Unchecked: string = 'compare_arrows';
@@ -91,7 +91,7 @@ export class ArbolComponent implements OnInit{
     private formBuilder: FormBuilder,
     private request: RequestManager,
     private autenticationService: ImplicitAutenticationService,
-    private codigosService: CodigosEstados
+    private codigosService: CodigosService
   ) {
     this.autenticationService.getRole().then((roles) => {
       if (
@@ -115,7 +115,7 @@ export class ArbolComponent implements OnInit{
   }
 
   ngOnChanges(changes: any) {
-    if (this.tipoPlanId !== this.codigosService.getIdTipoPlanProyecto()) {
+    if (this.tipoPlanId !== this.codigosService.getCodigo(TIPO_PLAN.Proyecto)) {
       if (this.idPlan !== this.planActual) {
         this.loadArbolMid();
         this.planActual = this.idPlan;
@@ -357,7 +357,7 @@ export class ArbolComponent implements OnInit{
 
   async ngOnInit() {
     await this.codigosService.cargarIdentificadores();
-    this.ID_TIPO_PLAN_PROYECTO = this.codigosService.getIdTipoPlanProyecto();
+    this.ID_TIPO_PLAN_PROYECTO = this.codigosService.getCodigo(TIPO_PLAN.Proyecto);
     this.formConstruirPUI = this.formBuilder.group({
       infoControl: ['', Validators.required],
       requiredfile: ['', Validators.required]

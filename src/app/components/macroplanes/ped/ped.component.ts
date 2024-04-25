@@ -7,10 +7,10 @@ import { DataRequest, DataRequestMID } from 'src/app/@core/models/dataRequest';
 import { Plan } from 'src/app/@core/models/plan';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
-import { RequestManager } from '../../../services/requestManager';
+import { RequestManager } from '../../../@core/services/requestManager';
 import { EditarDialogComponent } from '../../editar-dialog/editar-dialog.component';
 import { ConsultarDialogPedComponent } from './consultar-dialog-ped/consultar-dialog-ped.component';
-import { CodigosEstados } from 'src/app/services/codigosEstados.service';
+import { TIPO_PLAN, CodigosService } from 'src/app/@core/services/codigosEstados.service';
 
 @Component({
   selector: 'app-ped',
@@ -29,7 +29,7 @@ export class PedComponent implements OnInit{
   constructor(
     public dialog: MatDialog,
     private request: RequestManager,
-    private codigosService: CodigosEstados
+    private codigosService: CodigosService
   ) {
   }
 
@@ -200,7 +200,7 @@ export class PedComponent implements OnInit{
     this.request
       .get(
         environment.PLANES_CRUD,
-        `plan?query=tipo_plan_id:${this.codigosService.getIdTipoPlanDesarrolloEstrategico()}`
+        `plan?query=tipo_plan_id:${this.codigosService.getCodigo(TIPO_PLAN.DesarrolloEstrategico)}`
       )
       .subscribe({
         next: (data: DataRequest) => {
@@ -225,8 +225,6 @@ export class PedComponent implements OnInit{
   }
 
   editar(fila: Plan): void{
-    alert(fila._id)
-    console.log(JSON.stringify(fila));
     this.uid = fila._id;
     this.request.get(environment.PLANES_CRUD, `plan/${this.uid}`).subscribe({
       next: (data: DataRequest) => {
@@ -291,13 +289,15 @@ export class PedComponent implements OnInit{
   inactivar(fila: Plan):void{
     this.uid = fila._id;
     if (fila.activo){
-      if (fila.tipo_plan_id != this.codigosService.getIdTipoPlanProyecto()){
+      if (
+        fila.tipo_plan_id != this.codigosService.getCodigo(TIPO_PLAN.Proyecto)
+      ) {
         this.deleteData();
       } else {
         let res = {
           activo: false,
-        }
-        this.putData(res, 'activo')
+        };
+        this.putData(res, 'activo');
       }
     } else {
       Swal.fire({

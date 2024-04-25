@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Plan } from 'src/app/@core/models/plan';
-import { RequestManager } from 'src/app/services/requestManager';
+import { RequestManager } from 'src/app/@core/services/requestManager';
 
 @Component({
   selector: 'app-consultar-dialog-ped',

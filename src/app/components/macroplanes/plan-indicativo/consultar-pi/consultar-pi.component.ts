@@ -4,13 +4,13 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { EditarDialogComponent } from 'src/app/components/editar-dialog/editar-dialog.component';
-import { RequestManager } from 'src/app/services/requestManager';
+import { RequestManager } from 'src/app/@core/services/requestManager';
 import { ConsultarDialogPedComponent } from '../../ped/consultar-dialog-ped/consultar-dialog-ped.component';
 import Swal from 'sweetalert2';
 import { environment } from 'src/environments/environment';
 import { Plan } from 'src/app/@core/models/plan';
 import { DataRequest, DataRequestMID } from 'src/app/@core/models/dataRequest';
-import { CodigosEstados } from 'src/app/services/codigosEstados.service';
+import { CodigosService, TIPO_PLAN } from 'src/app/@core/services/codigosEstados.service';
 
 @Component({
   selector: 'app-consultar-pi',
@@ -29,7 +29,7 @@ export class ConsultarPiComponent implements OnInit{
   constructor(
     public dialog: MatDialog,
     private request: RequestManager,
-    private codigosService: CodigosEstados
+    private codigosService: CodigosService
   ) {
   }
 
@@ -93,7 +93,7 @@ export class ConsultarPiComponent implements OnInit{
             }
           },
           error: (error) => {
-            console.log(error);
+            console.error(error);
             Swal.fire({
               title: 'Error en la operación',
               icon: 'error',
@@ -132,7 +132,7 @@ export class ConsultarPiComponent implements OnInit{
                   }
                 },
                 error: (error) => {
-                  console.log(error);
+                  console.error(error);
                   Swal.fire({
                     title: 'Error en la operación',
                     icon: 'error',
@@ -203,7 +203,7 @@ export class ConsultarPiComponent implements OnInit{
     this.request
       .get(
         environment.PLANES_CRUD,
-        `plan?query=tipo_plan_id:${this.codigosService.getIdTipoPlanIndicativo()}`
+        `plan?query=tipo_plan_id:${this.codigosService.getCodigo(TIPO_PLAN.Indicativo)}`
       )
       .subscribe({
         next: (data: DataRequest) => {
@@ -286,7 +286,7 @@ export class ConsultarPiComponent implements OnInit{
   inactivar(fila: Plan):void{
     this.uid = fila._id;
     if (fila.activo){
-      if (fila.tipo_plan_id != this.codigosService.getIdTipoPlanProyecto()){
+      if (fila.tipo_plan_id != this.codigosService.getCodigo(TIPO_PLAN.Proyecto)){
         this.deleteData();
       } else {
         let res = {
