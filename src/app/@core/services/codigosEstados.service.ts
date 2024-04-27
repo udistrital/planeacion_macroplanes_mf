@@ -41,12 +41,10 @@ export class CodigosService {
             },
           });
       }).then((codigo) => {
-        // console.log(`${pos}:\t${valor.nombre} - ${valor.valor} - ${codigo}`);
         this.codigos[pos] = codigo;
       });
     });
     await Promise.all(promesas);
-    console.log(this.codigos)
   }
 
   public getCodigo(posicion: number) {

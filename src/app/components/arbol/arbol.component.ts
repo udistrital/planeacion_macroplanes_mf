@@ -104,6 +104,11 @@ export class ArbolComponent implements OnInit{
         this.rol = 'PLANEACION';
       }
     });
+    this.formConstruirPUI = this.formBuilder.group({
+      infoControl: ['', Validators.required],
+      requiredfile: ['', Validators.required]
+    });
+    this.planActual = '';
   }
 
   getErrorMessage(campo: FormControl) {
@@ -358,10 +363,5 @@ export class ArbolComponent implements OnInit{
   async ngOnInit() {
     await this.codigosService.cargarIdentificadores();
     this.ID_TIPO_PLAN_PROYECTO = this.codigosService.getCodigo(TIPO_PLAN.Proyecto);
-    this.formConstruirPUI = this.formBuilder.group({
-      infoControl: ['', Validators.required],
-      requiredfile: ['', Validators.required]
-    });
-    this.planActual = '';
   }
 }
