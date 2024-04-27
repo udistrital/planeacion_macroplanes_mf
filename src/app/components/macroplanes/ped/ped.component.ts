@@ -11,6 +11,7 @@ import { RequestManager } from '../../../@core/services/requestManager';
 import { EditarDialogComponent } from '../../editar-dialog/editar-dialog.component';
 import { ConsultarDialogPedComponent } from './consultar-dialog-ped/consultar-dialog-ped.component';
 import { TIPO_PLAN, CodigosService } from 'src/app/@core/services/codigosEstados.service';
+import { SubgrupoDetalle } from 'src/app/@core/models/subGrupoDetalle';
 
 @Component({
   selector: 'app-ped',
@@ -58,7 +59,7 @@ export class PedComponent implements OnInit{
     });
   }
 
-  openDialogConsultar(sub: any, subDetalle: any): void {
+  openDialogConsultar(sub: Plan, subDetalle: SubgrupoDetalle): void {
     const dialogRef = this.dialog.open(ConsultarDialogPedComponent, {
       width: 'calc(80vw - 60px)',
       height: 'calc(40vw - 60px)',
@@ -251,18 +252,32 @@ export class PedComponent implements OnInit{
   }
 
   consultar(fila: Plan): void{
+    this.plan = fila;
     this.uid = fila._id;
-    this.request.get(environment.PLANES_CRUD, `plan/${this.uid}`).subscribe({
-      next: (data: DataRequest) => {
-        if (data && data.Data) {
-          // Verifica si hay datos y si data.Data no es nulo ni está vacío
-          this.plan = data.Data;
-          let subgrupoDetalle = {
-            type: '',
-            required: false,
-          };
-          this.openDialogConsultar(this.plan, subgrupoDetalle);
-        } else {
+    this.request
+      .get(environment.PLANEACION_ARBOL_MID, `arbol/${this.uid}`)
+      .subscribe({
+        next: (data: DataRequestMID) => {
+          // Verifica si hay datos en el arbol de el plan
+          if (data?.data) {
+            let subgrupoDetalle: SubgrupoDetalle = {
+              type: '',
+              required: false,
+            };
+            this.openDialogConsultar(this.plan, subgrupoDetalle);
+          } else {
+            Swal.fire({
+              title: 'No hay datos relacionados',
+              text: 'No existe información para el plan señalado.',
+              icon: 'info',
+              showConfirmButton: false,
+              timer: 2500,
+            });
+          }
+        },
+        error: (error) => {
+          console.error(error);
+          // Maneja el caso de error en la solicitud HTTP GET
           Swal.fire({
             title: 'No hay datos relacionados',
             text: 'No existe información para el plan señalado.',
@@ -270,20 +285,8 @@ export class PedComponent implements OnInit{
             showConfirmButton: false,
             timer: 2500,
           });
-        }
-      },
-      error: (error) => {
-        console.error(error);
-        // Maneja el caso de error en la solicitud HTTP GET
-        Swal.fire({
-          title: 'Error en la operación',
-          text: 'No se encontraron datos registrados',
-          icon: 'warning',
-          showConfirmButton: false,
-          timer: 2500,
-        });
-      },
-    });
+        },
+      });
   }
 
   inactivar(fila: Plan):void{
