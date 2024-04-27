@@ -1,4 +1,4 @@
-export type SubgrupoDetalle = {
+export type SubGrupoDetalle = {
   type: string;
   required: boolean;
 }
