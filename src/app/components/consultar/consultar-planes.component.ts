@@ -5,16 +5,15 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DataRequest, DataRequestMID } from 'src/app/@core/models/dataRequest';
 import { Plan } from 'src/app/@core/models/plan';
-import { environment } from 'src/environments/environment';
-import Swal from 'sweetalert2';
+import { SubGrupoDetalle } from 'src/app/@core/models/subGrupoDetalle';
 import {
-  TIPO_PLAN,
   CodigosService,
 } from 'src/app/@core/services/codigosEstados.service';
-import { SubGrupoDetalle } from 'src/app/@core/models/subGrupoDetalle';
 import { RequestManager } from 'src/app/@core/services/requestManager';
-import { EditarDialogComponent } from '../dialogs/editar-dialog/editar-dialog.component';
+import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
 import { ConsultarDialogComponent } from '../dialogs/consultar-dialog/consultar-dialog.component';
+import { EditarDialogComponent } from '../dialogs/editar-dialog/editar-dialog.component';
 
 @Component({
   selector: 'app-consultar-planes',
