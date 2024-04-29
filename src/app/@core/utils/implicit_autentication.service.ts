@@ -5,6 +5,7 @@ import {Md5} from 'ts-md5';
 import Swal from 'sweetalert2';
 import { delay, retry } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { User, UserService, UserSubscriber } from '../models/usuario';
 @Injectable({
     providedIn: 'root',
 })
@@ -16,11 +17,10 @@ export class ImplicitAutenticationService {
     payload: any;
     timeActiveAlert: number = 4000;
     isLogin = false;
-    private user: any;
     private timeLogoutBefore = 1000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
 
-    private userSubject = new BehaviorSubject({});
+    private userSubject = new BehaviorSubject({} as UserSubscriber);
     public user$ = this.userSubject.asObservable();
 
     private menuSubject = new BehaviorSubject({});
@@ -35,7 +35,7 @@ export class ImplicitAutenticationService {
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') {
                 const expires = this.setExpiresAt();
-                this.autologout(expires);
+                this.autologout(expires as Date);
             }
         });
     }
@@ -43,7 +43,7 @@ export class ImplicitAutenticationService {
         this.environment = entorno;
         const id_token = window.localStorage.getItem('id_token');
 
-        if (window.localStorage.getItem('id_token') === null) {
+        if (id_token === null) {
             var params: any = {}, queryString = location.hash.substring(1), regex = /([^&=]+)=([^&]*)/g;
             let m;
             while (m = regex.exec(queryString)) {
@@ -93,40 +93,55 @@ export class ImplicitAutenticationService {
                 this.updateAuth(payload);
             }
         }
-        const expires = this.setExpiresAt();
-        this.autologout(expires);
+        this.autologout(this.setExpiresAt() as Date);
         this.clearUrl();
     }
 
 
-    updateAuth(payload: { email: any; }) {
+    updateAuth(payload: User) {
         const user = localStorage.getItem('user');
         if (user) {
             this.userSubject.next(JSON.parse(atob(user)));
         } else {
             this.httpOptions = {
-                headers: new HttpHeaders({
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                }),
+              headers: new HttpHeaders({
+                Accept: 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+              }),
             };
-            const userTemp = payload.email;
-            this.user = { user: userTemp };
-            this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
-                user: (payload.email)
-            }, this.httpOptions)
-                .pipe(retry(3))
-                .subscribe((res: any) => {
-                    this.clearUrl();
-                    localStorage.setItem('user', btoa(JSON.stringify({ ...{ user: payload }, ...{ userService: res } })));
-                    this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
-                }, (error) => (console.log(error))
-                );
+            this.httpClient
+              .post<any>(
+                this.environment.AUTENTICACION_MID,
+                {
+                  user: payload.email,
+                },
+                this.httpOptions
+              )
+              .pipe(retry(3))
+              .subscribe({
+                next: (res: UserService) => {
+                  this.clearUrl();
+                  localStorage.setItem(
+                    'user',
+                    btoa(
+                      JSON.stringify({
+                        ...{ user: payload },
+                        ...{ userService: res },
+                      })
+                    )
+                  );
+                  this.userSubject.next({
+                    ...{ user: payload },
+                    ...{ userService: res },
+                  });
+                },
+                error: (error) => console.error(error),
+              });
             this.httpOptions = {
-                headers: new HttpHeaders({
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                }),
+              headers: new HttpHeaders({
+                Accept: 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+              }),
             };
         }
     }
@@ -145,77 +160,17 @@ export class ImplicitAutenticationService {
         }
     }
 
-    public getPayload(): any {
-        const idTokenString = window.localStorage.getItem('id_token');
-        if (idTokenString !== null){
-            const idToken = idTokenString.split('.');
-            var payload = JSON.parse(atob(idToken[1]));
-        }
-        return payload;
-    }
-
     public getRole() {
-        const rolePromise = new Promise((resolve, reject) => {
-            this.user$.subscribe((data: any) => {
-                const { user, userService } = data;
+        const rolePromise = new Promise<string[]>((resolve, _) => {
+            this.user$
+            .subscribe(({ user, userService }) => {
                 const roleUser = typeof user.role !== 'undefined' ? user.role : [];
                 const roleUserService = typeof userService.role !== 'undefined' ? userService.role : [];
-                const roles = (roleUser.concat(roleUserService)).filter((data: any) => (data.indexOf('/') === -1));
+                const roles = (roleUser.concat(roleUserService)).filter((data) => (data.indexOf('/') === -1));
                 resolve(roles);
             });
         });
         return rolePromise;
-    }
-
-    public getMail() {
-        const rolePromise = new Promise((resolve, reject) => {
-            this.user$.subscribe((data: any) => {
-                const { userService } = data;
-                resolve(userService.email);
-            });
-        });
-        return rolePromise;
-    }
-
-    public getDocument() {
-        const rolePromise = new Promise((resolve, reject) => {
-            this.user$.subscribe((data: any) => {
-                const { userService } = data;
-                resolve(userService.documento);
-            });
-        });
-        return rolePromise;
-    }
-
-    public logoutValid() {
-        var state;
-        var valid = true;
-        var queryString = location.search.substring(1);
-        var regex = /([^&=]+)=([^&]*)/g;
-        var m;
-        while (!!(m = regex.exec(queryString))) {
-            state = decodeURIComponent(m[2]);
-        }
-        if (window.localStorage.getItem('state') === state) {
-            this.clearStorage();
-            valid = true;
-        } else {
-            valid = false;
-        }
-        return valid;
-    }
-
-    // el flag es un booleano que define si habrá boton de login
-    public login(flag: any): boolean {
-        if (window.localStorage.getItem('id_token') === 'undefined' ||
-            window.localStorage.getItem('id_token') === null || this.logoutValid()) {
-            if (!flag) {
-                this.getAuthorizationUrl();
-            }
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public clearUrl() {
@@ -223,35 +178,7 @@ export class ImplicitAutenticationService {
         window.history.replaceState({}, document.title, clean_uri);
     }
 
-    public getAuthorizationUrl() {
-        this.params = this.environment;
-        if (!this.params.hasOwnProperty('nonce')) {
-            const nonceData = this.generateState();
-            this.params = { ...this.params, ...{ nonce: nonceData } };
-        }
-        if (!this.params.state) {
-            this.params.state = this.generateState();
-        }
-        let url = this.params.AUTORIZATION_URL + '?' +
-            'client_id=' + encodeURIComponent(this.params.CLIENTE_ID) + '&' +
-            'redirect_uri=' + encodeURIComponent(this.params.REDIRECT_URL) + '&' + // + window.location.href + '&' para redirect con regex
-            'response_type=' + encodeURIComponent(this.params.RESPONSE_TYPE) + '&' +
-            'scope=' + encodeURIComponent(this.params.SCOPE) + '&' +
-            'state_url=' + encodeURIComponent(window.location.hash);
-        if (this.params.hasOwnProperty('nonce')) {
-            url += '&nonce=' + encodeURIComponent(this.params.nonce);
-        }
-        url += '&state=' + encodeURIComponent(this.params.state);
-        window.location.replace(url);
-        return url;
-    }
-
-    public generateState(): any {
-        const text = ((Date.now() + Math.random()) * Math.random()).toString().replace('.', '');
-        return Md5.hashStr(text);
-    }
-
-    public setExpiresAt(): any {
+    public setExpiresAt(): false | Date {
         const expiresAt = localStorage.getItem('expires_at');
         if (!expiresAt || expiresAt === 'Invalid Date') {
             const expiresAtDate = new Date();
@@ -294,24 +221,6 @@ export class ImplicitAutenticationService {
                 }
             }
         }
-    }
-    public expired() {
-        const expiresAtDate = new Date();
-        const expiresInString = window.localStorage.getItem('expires_in');
-        let expiresIn: string | number = 0;
-
-        if (expiresInString !== null) {
-            expiresIn = parseInt(expiresInString, 10);
-        }
-
-        if (typeof expiresIn === 'number') {
-            expiresAtDate.setSeconds(expiresAtDate.getSeconds() + expiresIn);
-        }
-        return (expiresAtDate < new Date());
-    }
-
-    public live() {
-        return this.isLogin;
     }
 
     public clearStorage() {

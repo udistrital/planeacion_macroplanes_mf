@@ -8,33 +8,13 @@ import {
   MatTreeFlatDataSource,
   MatTreeFlattener
 } from '@angular/material/tree';
-import { RequestManager } from '../services/requestManager';
+import { RequestManager } from '../../@core/services/requestManager';
 import Swal from 'sweetalert2';
 import { ImplicitAutenticationService } from 'src/app/@core/utils/implicit_autentication.service';
 import { environment } from 'src/environments/environment';
-
-interface Subgrupo {
-  activo: string;
-  nombre: string;
-  descripcion: string;
-  id: string;
-  children?: Subgrupo[];
-}
-
-// Objeto fila
-
-interface Nodo {
-  expandable: boolean;
-  activo: string;
-  nombre: string;
-  descripcion: string;
-  id: string;
-  level: number;
-  icon?: string;
-  idx?: number;
-  padre_idx?: number | undefined;
-  hijos_idx?: (number | undefined)[];
-}
+import { DataRequestMID } from 'src/app/@core/models/dataRequest';
+import { Nodo, Subgrupo } from 'src/app/@core/models/arbol';
+import { CodigosService, TIPO_PLAN } from 'src/app/@core/services/codigosEstados.service';
 
 const Checked: string = 'done';
 const Unchecked: string = 'compare_arrows';
@@ -46,6 +26,7 @@ const No_Aplica: string = "no aplica"
   styleUrls: ['./arbol.component.scss']
 })
 export class ArbolComponent implements OnInit{
+  ID_TIPO_PLAN_PROYECTO!:string;
   selectedFiles: any;
   dataRow: any;
   formConstruirPUI!: FormGroup;
@@ -109,15 +90,25 @@ export class ArbolComponent implements OnInit{
   constructor(
     private formBuilder: FormBuilder,
     private request: RequestManager,
-    private autenticationService: ImplicitAutenticationService
-
+    private autenticationService: ImplicitAutenticationService,
+    private codigosService: CodigosService
   ) {
-    let roles: any = this.autenticationService.getRole();
-    if (roles.__zone_symbol__value.find((x: any) => x == 'JEFE_DEPENDENCIA' || x == 'ASISTENTE_DEPENDENCIA')) {
-      this.rol = 'JEFE_DEPENDENCIA'
-    } else if (roles.__zone_symbol__value.find((x: any) => x == 'PLANEACION')) {
-      this.rol = 'PLANEACION'
-    }
+    this.autenticationService.getRole().then((roles) => {
+      if (
+        roles.find(
+          (x) => x == 'JEFE_DEPENDENCIA' || x == 'ASISTENTE_DEPENDENCIA'
+        )
+      ) {
+        this.rol = 'JEFE_DEPENDENCIA';
+      } else if (roles.find((x) => x == 'PLANEACION')) {
+        this.rol = 'PLANEACION';
+      }
+    });
+    this.formConstruirPUI = this.formBuilder.group({
+      infoControl: ['', Validators.required],
+      requiredfile: ['', Validators.required]
+    });
+    this.planActual = '';
   }
 
   getErrorMessage(campo: FormControl) {
@@ -129,7 +120,7 @@ export class ArbolComponent implements OnInit{
   }
 
   ngOnChanges(changes: any) {
-    if (this.tipoPlanId !== '611af8464a34b3599e3799a2') {
+    if (this.tipoPlanId !== this.codigosService.getCodigo(TIPO_PLAN.Proyecto)) {
       if (this.idPlan !== this.planActual) {
         this.loadArbolMid();
         this.planActual = this.idPlan;
@@ -152,28 +143,32 @@ export class ArbolComponent implements OnInit{
         Swal.showLoading();
       },
     })
-    this.request.get(environment.PLANES_MID, `arbol/` + this.idPlan).subscribe((data: any) => {
-      Swal.close();
-      if (data.Data !== null) {
-        this.mostrar = true;
-        this.dataSource.data = data.Data;
-        if (this.armonizacionPED || this.armonizacionPI) {
-          this.linksArbol()
-          this.expandNodes()
+    this.request.get(environment.PLANEACION_ARBOL_MID, `arbol/${this.idPlan}`).subscribe({
+      next: (data: DataRequestMID) => {
+        Swal.close();
+        if (data.data !== null) {
+          this.mostrar = true;
+          this.dataSource.data = data.data;
+          if (this.armonizacionPED || this.armonizacionPI) {
+            this.linksArbol();
+            this.expandNodes();
+          }
+        } else {
+          this.dataSource.data = [];
         }
-      } else {
+      },
+      error: (error) => {
         this.dataSource.data = [];
-      }
-    }, (error) => {
-      this.dataSource.data = [];
-      Swal.fire({
-        title: 'Error en la operación',
-        text: 'No se encontraron datos registrados',
-        icon: 'warning',
-        showConfirmButton: false,
-        timer: 2500
-      })
-    })
+        console.error(error);
+        Swal.fire({
+          title: 'Error en la operación',
+          text: 'No se encontraron datos registrados',
+          icon: 'warning',
+          showConfirmButton: false,
+          timer: 2500,
+        });
+      },
+    });
   }
 
   linksArbol() {
@@ -365,11 +360,8 @@ export class ArbolComponent implements OnInit{
 
   hasChild = (_: number, node: Nodo) => node.expandable;
 
-  ngOnInit(): void {
-    this.formConstruirPUI = this.formBuilder.group({
-      infoControl: ['', Validators.required],
-      requiredfile: ['', Validators.required]
-    });
-    this.planActual = '';
+  async ngOnInit() {
+    await this.codigosService.cargarIdentificadores();
+    this.ID_TIPO_PLAN_PROYECTO = this.codigosService.getCodigo(TIPO_PLAN.Proyecto);
   }
 }
