@@ -1,3 +1,5 @@
+@use '../../components/styles/global';
+
 table {
   width: 100%;
 }
@@ -7,13 +9,19 @@ th {
   text-align: center;
 }
 
-.td-align-right{
-text-align: right;
-justify-content: flex-end;
+.td-align-right {
+  text-align: right;
+  justify-content: flex-end;
 }
 
-.header-align-right{
-display: flex;
-padding: 21px 0;
-justify-content: flex-end;
+.header-align-right {
+  display: flex;
+  padding: 21px 0;
+  justify-content: flex-end;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
 }
