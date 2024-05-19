@@ -12,7 +12,7 @@ import { RequestManager } from '../../@core/services/requestManager';
 import Swal from 'sweetalert2';
 import { ImplicitAutenticationService } from 'src/app/@core/utils/implicit_autentication.service';
 import { environment } from 'src/environments/environment';
-import { DataRequestMID } from 'src/app/@core/models/dataRequest';
+import { DataRequest } from 'src/app/@core/models/dataRequest';
 import { Nodo, Subgrupo } from 'src/app/@core/models/arbol';
 import { CodigosService, TIPO_PLAN } from 'src/app/@core/services/codigosEstados.service';
 
@@ -25,8 +25,8 @@ const No_Aplica: string = "no aplica"
   templateUrl: './arbol.component.html',
   styleUrls: ['./arbol.component.scss']
 })
-export class ArbolComponent implements OnInit{
-  ID_TIPO_PLAN_PROYECTO!:string;
+export class ArbolComponent implements OnInit {
+  ID_TIPO_PLAN_PROYECTO!: string;
   selectedFiles: any;
   dataRow: any;
   formConstruirPUI!: FormGroup;
@@ -144,11 +144,11 @@ export class ArbolComponent implements OnInit{
       },
     })
     this.request.get(environment.PLANEACION_ARBOL_MID, `arbol/${this.idPlan}`).subscribe({
-      next: (data: DataRequestMID) => {
+      next: (data: DataRequest) => {
         Swal.close();
-        if (data.data !== null) {
+        if (data.Data !== null) {
           this.mostrar = true;
-          this.dataSource.data = data.data;
+          this.dataSource.data = data.Data;
           if (this.armonizacionPED || this.armonizacionPI) {
             this.linksArbol();
             this.expandNodes();
