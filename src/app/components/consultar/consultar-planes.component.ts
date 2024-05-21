@@ -33,7 +33,7 @@ export class ConsultarPlanesComponent implements OnInit {
     public dialog: MatDialog,
     private request: RequestManager,
     private codigosService: CodigosService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     await this.codigosService.cargarIdentificadores();
@@ -98,9 +98,8 @@ export class ConsultarPlanesComponent implements OnInit {
       // Si cambio el estado activo de el plan
       Swal.fire({
         title: planActualizado.activo ? 'Habilitar plan' : 'Inhabilitar Plan',
-        text: `¿Está seguro de ${
-          planActualizado.activo ? 'habilitar' : 'inhabilitar'
-        } el plan?`,
+        text: `¿Está seguro de ${planActualizado.activo ? 'habilitar' : 'inhabilitar'
+          } el plan?`,
         showCancelButton: true,
         confirmButtonText: `Si`,
         cancelButtonText: `No`,
@@ -125,7 +124,7 @@ export class ConsultarPlanesComponent implements OnInit {
                         {}
                       )
                       .subscribe({
-                        next: (data: DataRequestMID) => {
+                        next: (data: DataRequest) => {
                           if (data) {
                             Swal.fire({
                               title: 'Cambio realizado',
@@ -155,7 +154,7 @@ export class ConsultarPlanesComponent implements OnInit {
                         `arbol/plan/${planActualizado._id}/desactivar`
                       )
                       .subscribe({
-                        next: (data: DataRequestMID) => {
+                        next: (data: DataRequest) => {
                           if (data) {
                             Swal.fire({
                               title: 'Cambio realizado',
@@ -249,7 +248,7 @@ export class ConsultarPlanesComponent implements OnInit {
             `arbol/plan/${planId}/desactivar`
           )
           .subscribe({
-            next: (data: DataRequestMID) => {
+            next: (data: DataRequest) => {
               if (data) {
                 Swal.fire({
                   title: 'Cambio realizado',
@@ -341,9 +340,9 @@ export class ConsultarPlanesComponent implements OnInit {
     this.request
       .get(environment.PLANEACION_ARBOL_MID, `arbol/${fila._id}`)
       .subscribe({
-        next: (data: DataRequestMID) => {
+        next: (data: DataRequest) => {
           // Verifica si hay datos en el arbol de el plan
-          if (data?.data) {
+          if (data?.Data) {
             this.openDialogConsultar(fila);
           } else {
             Swal.fire({
