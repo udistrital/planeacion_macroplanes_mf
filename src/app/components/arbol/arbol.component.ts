@@ -10,7 +10,7 @@ import {
 } from '@angular/material/tree';
 import { RequestManager } from '../../@core/services/requestManager';
 import Swal from 'sweetalert2';
-import { ImplicitAutenticationService } from 'src/app/@core/utils/implicit_autentication.service';
+import { ImplicitAutenticationService } from '@udistrital/planeacion-utilidades-module';
 import { environment } from 'src/environments/environment';
 import { DataRequest } from 'src/app/@core/models/dataRequest';
 import { Nodo, Subgrupo } from 'src/app/@core/models/arbol';
@@ -87,20 +87,22 @@ export class ArbolComponent implements OnInit {
   @Input() estado: string = "";
   @Input() updateSignal!: Observable<String[]>;
   @Output() grupo = new EventEmitter<any>();
+
+  private autenticationService = new ImplicitAutenticationService();
+
   constructor(
     private formBuilder: FormBuilder,
     private request: RequestManager,
-    private autenticationService: ImplicitAutenticationService,
     private codigosService: CodigosService
   ) {
-    this.autenticationService.getRole().then((roles) => {
+    this.autenticationService.getRoles().then((roles: any) => {
       if (
         roles.find(
-          (x) => x == 'JEFE_DEPENDENCIA' || x == 'ASISTENTE_DEPENDENCIA'
+          (x: any) => x == 'JEFE_DEPENDENCIA' || x == 'ASISTENTE_DEPENDENCIA'
         )
       ) {
         this.rol = 'JEFE_DEPENDENCIA';
-      } else if (roles.find((x) => x == 'PLANEACION')) {
+      } else if (roles.find((x: any) => x == 'PLANEACION')) {
         this.rol = 'PLANEACION';
       }
     });
