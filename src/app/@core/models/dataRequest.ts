@@ -4,10 +4,3 @@ export type DataRequest = {
   Status: string;
   Success: boolean;
 };
-
-export type DataRequestMID = {
-  data: any[] | any;
-  message: string;
-  status: string;
-  success: boolean;
-};

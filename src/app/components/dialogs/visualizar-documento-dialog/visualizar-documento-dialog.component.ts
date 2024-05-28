@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ImplicitAutenticationService } from 'src/app/@core/utils/implicit_autentication.service';
+import { ImplicitAutenticationService } from '@udistrital/planeacion-utilidades-module';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
   templateUrl: './visualizar-documento-dialog.component.html',
   styleUrls: ['./visualizar-documento-dialog.component.scss']
 })
-export class VisualizarDocumentoDialogComponent implements OnInit{
+export class VisualizarDocumentoDialogComponent implements OnInit {
   file: any;
   header = "data:application/pdf;base64,";
   rol: string | undefined;
@@ -17,8 +17,9 @@ export class VisualizarDocumentoDialogComponent implements OnInit{
   observacion: string;
   observacionText: string;
 
+  private autenticationService = new ImplicitAutenticationService();
+
   constructor(
-    private autenticationService: ImplicitAutenticationService,
     public dialogRef: MatDialogRef<VisualizarDocumentoDialogComponent>,
     private sanitizer: DomSanitizer,
     @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -42,7 +43,7 @@ export class VisualizarDocumentoDialogComponent implements OnInit{
   }
 
   getRol() {
-    this.autenticationService.getRole().then((roles) => {
+    this.autenticationService.getRoles().then((roles: any) => {
       if (
         roles.find(
           (x: string) => x == 'JEFE_DEPENDENCIA' || x == 'ASISTENTE_DEPENDENCIA'
