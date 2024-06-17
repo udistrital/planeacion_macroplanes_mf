@@ -1,3 +1,5 @@
+@use '../styles/global';
+
 table {
   width: 100%;
 }
@@ -7,27 +9,42 @@ th {
   text-align: center;
 }
 
-.td-align-right{
-text-align: right;
-justify-content: flex-end;
+.td-align-right {
+  text-align: right;
+  justify-content: flex-end;
 }
 
-.header-align-right{
-display: flex;
-padding: 21px 0;
-justify-content: flex-end;
+.header-align-right {
+  display: flex;
+  padding: 21px 0;
+  justify-content: flex-end;
 }
 
-.textGuide{
-background-color: #ffff;
-border: 1px solid var(--primary);
-border-radius: 15px 15px 15px 15px;
-box-shadow: var(--primary) 3px 4px 0;
-color: #0a0a0a;
-display: inline-block;
-font-size: 1.1em;
-padding: 1%;
-text-decoration: none;
-margin-bottom: 1%;
-width: 97%;
+.textGuide {
+  background-color: #ffff;
+  border: 1px solid var(--primary);
+  border-radius: 15px 15px 15px 15px;
+  box-shadow: var(--primary) 3px 4px 0;
+  color: #0a0a0a;
+  display: inline-block;
+  font-size: 1.1em;
+  padding: 1%;
+  text-decoration: none;
+  margin-bottom: 1%;
+  width: 97%;
+}
+
+.mat-mdc-form-field {
+  margin-top: 20px;
+}
+
+.mat-column-actions {
+  text-align: center;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  margin-left: 10px;
 }

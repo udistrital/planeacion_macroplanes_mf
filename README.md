@@ -13,9 +13,20 @@ Microfrontend de MacroPlanes. Contiene las características, funcionalidades y v
 
 ```shell
 # En Pipeline
-SLACK_AND_WEBHOOK: WEBHOOK ..
-AWS_ACCESS_KEY_ID: llave de acceso ID Usuario AWS
-AWS_SECRET_ACCESS_KEY: Secreto de Usuario AWS
+PLANES_CRUD: [API Planes CRUD],
+PLANEACION_ARBOL_MID: [API MicroMid Arbol],
+PARAMETROS_SERVICE: [API PARAMETROS SERVICE],
+GESTOR_DOCUMENTAL_MID: [API GESTOR DOCUMENTAL MID],
+TOKEN: {
+  AUTORIZATION_URL: [URL de Autorización],
+  CLIENTE_ID: [Tipo de Cliente],
+  RESPONSE_TYPE: [Tipo de Respuesta],
+  SCOPE: [Scope],
+  REDIRECT_URL: [URL de redirección],
+  SIGN_OUT_URL: [URL de Cerrar Sesión],
+  SIGN_OUT_REDIRECT_URL: [URL de redirección],
+  AUTENTICACION_MID: [API MID Autenticación],
+},
 ```
 
 ### Ejecución del Proyecto

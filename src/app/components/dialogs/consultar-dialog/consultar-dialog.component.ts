@@ -10,7 +10,7 @@ import { Plan } from 'src/app/@core/models/plan';
 })
 export class ConsultarDialogComponent implements OnInit {
   formConsultar: FormGroup;
-  plan : Plan;
+  plan: Plan;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -25,5 +25,5 @@ export class ConsultarDialogComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 }
