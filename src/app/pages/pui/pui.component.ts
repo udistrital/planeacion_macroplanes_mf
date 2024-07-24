@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 import { DataRequest } from 'src/app/@core/models/dataRequest';
 import { DocumentRequest, Documento } from 'src/app/@core/models/document';
 import { Plan } from 'src/app/@core/models/plan';
@@ -20,6 +21,7 @@ export class PuiComponent implements OnInit {
   displayedColumns: string[] = ['Vigencia', 'Nombre', 'Descripcion', 'Soporte'];
   dataSource!: MatTableDataSource<Plan>;
   planes!: Plan[];
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private request: RequestManager,
@@ -41,6 +43,7 @@ export class PuiComponent implements OnInit {
             this.planes = data.Data as Plan[];
             this.getVigencias();
             this.dataSource.data = this.planes;
+            this.dataSource.paginator = this.paginator;
           }
         },
         error: (error) => {
