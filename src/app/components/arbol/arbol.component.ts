@@ -141,6 +141,7 @@ export class ArbolComponent implements OnInit {
       title: 'Cargando información',
       timerProgressBar: true,
       showConfirmButton: false,
+      allowOutsideClick: false,
       willOpen: () => {
         Swal.showLoading();
       },
@@ -242,7 +243,8 @@ export class ArbolComponent implements OnInit {
               icon: 'warning',
               confirmButtonText: `Sí`,
               cancelButtonText: `No`,
-              showCancelButton: true
+              showCancelButton: true,
+              allowOutsideClick: false,
             }).then((result: { isConfirmed: any; }) => {
               if (result.isConfirmed) {
                 resolve(1); // confirma dejar no aplica, quitar resto del nivel
