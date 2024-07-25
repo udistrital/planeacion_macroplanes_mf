@@ -16,7 +16,7 @@ import { VisualizarDocumentoDialogComponent } from '../../components/dialogs/vis
   templateUrl: './pui.component.html',
   styleUrls: ['./pui.component.scss']
 })
-export class PuiComponent implements OnInit{
+export class PuiComponent implements OnInit {
   displayedColumns: string[] = ['Vigencia', 'Nombre', 'Descripcion', 'Soporte'];
   dataSource!: MatTableDataSource<Plan>;
   planes!: Plan[];
@@ -67,7 +67,7 @@ export class PuiComponent implements OnInit{
           .subscribe({
             next: (data: DataRequest) => {
               if (data) {
-                let vigencia: Vigencia  = data.Data[0];
+                let vigencia: Vigencia = data.Data[0];
                 this.planes[i].vigencia = vigencia.Nombre;
               }
             },
@@ -110,7 +110,7 @@ export class PuiComponent implements OnInit{
             width: '1000px',
             minHeight: 'calc(100vh - 90px)',
             height: '80%',
-            data: { "url": header + documento.file, banderaPUI: true}
+            data: { "url": header + documento.file, banderaPUI: true }
           });
         }
       })
@@ -130,6 +130,7 @@ export class PuiComponent implements OnInit{
       title: 'Cargando documento',
       timerProgressBar: true,
       showConfirmButton: false,
+      allowOutsideClick: false,
       willOpen: () => {
         Swal.showLoading();
       },
