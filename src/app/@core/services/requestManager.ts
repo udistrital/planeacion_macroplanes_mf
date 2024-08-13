@@ -85,10 +85,10 @@ export class RequestManager {
    * @param element data to send as JSON, With the id to UPDATE
    * @returns Observable<any>
    */
-  put(path: string, endpoint: string, element: any) {
+  put(path: string, endpoint: string, element: any, id: any) {
     return this.header$.pipe(
       mergeMap(header => {
-        return this.http.put<any>(`${path}${endpoint}`, element, header).pipe(
+        return this.http.put<any>(`${path}${endpoint}/${id}`, element, header).pipe(
           catchError(this.errManager.handleError),
         );
       })
