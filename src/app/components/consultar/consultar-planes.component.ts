@@ -24,7 +24,7 @@ export class ConsultarPlanesComponent implements OnInit {
   @Input() posicionTipoPlan!: number;
   displayedColumns: string[] = ['nombre', 'descripcion', 'activo', 'vigencia_aplica', 'actions'];
   dataSource!: MatTableDataSource<Plan>;
-  uid!: number; // id del objeto
+  uid!: any; // id del objeto
   planes!: Plan[];
   plan!: Plan;
 
@@ -95,146 +95,7 @@ export class ConsultarPlanesComponent implements OnInit {
     });
   }
 
-  actualizarPlan(planActualizado: Plan) {
-    if (this.plan.activo != planActualizado.activo) {
-      // Si cambio el estado activo de el plan
-      Swal.fire({
-        title: planActualizado.activo ? 'Habilitar plan' : 'Inhabilitar Plan',
-        text: `¿Está seguro de ${planActualizado.activo ? 'habilitar' : 'inhabilitar'
-          } el plan?`,
-        showCancelButton: true,
-        confirmButtonText: `Si`,
-        cancelButtonText: `No`,
-        allowOutsideClick: false,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Actualiza el plan
-          this.request
-            .put(
-              environment.PLANES_CRUD,
-              `plan/${planActualizado._id}`,
-              planActualizado
-            )
-            .subscribe({
-              next: (data: DataRequest) => {
-                if (data) {
-                  if (planActualizado.activo) {
-                    // Activa el arbol
-                    this.request
-                      .put(
-                        environment.PLANEACION_ARBOL_MID,
-                        `arbol/plan/${planActualizado._id}/activar`,
-                        {}
-                      )
-                      .subscribe({
-                        next: (data: DataRequest) => {
-                          if (data) {
-                            Swal.fire({
-                              title: 'Cambio realizado',
-                              icon: 'success',
-                            }).then((result) => {
-                              if (result.value) {
-                                window.location.reload();
-                              }
-                            });
-                          }
-                        },
-                        error: (error) => {
-                          console.error(error);
-                          Swal.fire({
-                            title: 'No se logró activar el plan',
-                            icon: 'error',
-                            showConfirmButton: false,
-                            timer: 2500,
-                          });
-                        },
-                      });
-                  } else {
-                    // Desactiva el arbol
-                    this.request
-                      .delete(
-                        environment.PLANEACION_ARBOL_MID,
-                        `arbol/plan/${planActualizado._id}/desactivar`
-                      )
-                      .subscribe({
-                        next: (data: DataRequest) => {
-                          if (data) {
-                            Swal.fire({
-                              title: 'Cambio realizado',
-                              icon: 'success',
-                            }).then((result) => {
-                              if (result.value) {
-                                window.location.reload();
-                              }
-                            });
-                          }
-                        },
-                        error: (error) => {
-                          console.error(error);
-                          Swal.fire({
-                            title: 'No se logró desactivar el plan',
-                            icon: 'error',
-                            showConfirmButton: false,
-                            timer: 2500,
-                          });
-                        },
-                      });
-                  }
-                }
-              },
-              error: (error) => {
-                console.error(error);
-                Swal.fire({
-                  title: 'Error en la operación',
-                  icon: 'error',
-                  showConfirmButton: false,
-                  timer: 2500,
-                });
-              },
-            });
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          Swal.fire({
-            title: 'Cambio cancelado',
-            icon: 'error',
-            showConfirmButton: false,
-            timer: 2500,
-          });
-        }
-      });
-    } else {
-      // Si no cambio el estado activo de el plan
-      this.request
-        .put(
-          environment.PLANES_CRUD,
-          `plan/${planActualizado._id}`,
-          planActualizado
-        )
-        .subscribe({
-          next: (data: DataRequest) => {
-            if (data) {
-              Swal.fire({
-                title: 'Actualización correcta',
-                text: `Se actualizaron correctamente los datos`,
-                icon: 'success',
-              }).then((result) => {
-                if (result.value) {
-                  window.location.reload();
-                }
-              });
-            }
-          },
-          error: (error) => {
-            console.error(error);
-            Swal.fire({
-              title: 'Error en la operación',
-              icon: 'error',
-              showConfirmButton: false,
-              timer: 2500,
-            });
-          },
-        });
-    }
-  }
+
 
   inactivarArbol(planId: string) {
     Swal.fire({
@@ -469,7 +330,7 @@ export class ConsultarPlanesComponent implements OnInit {
   }
 
   formatearVigencias(row: any) {
-    if (!row.vigencia_aplica) return 'Por definir';
+    if (!row.vigencia_aplica || JSON.parse(row.vigencia_aplica).length == 0) return 'Por definir';
     return JSON.parse(row.vigencia_aplica).map((vigencia: any) => vigencia.Nombre).join(', ');
   }
 
