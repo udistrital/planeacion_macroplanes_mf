@@ -14,6 +14,10 @@ th {
   justify-content: flex-end;
 }
 
+.chipsVigencias {
+  padding-left: 7% !important;
+}
+
 .header-align-right {
   display: flex;
   padding: 21px 0;
@@ -40,6 +44,12 @@ th {
 
 .mat-column-actions {
   text-align: center;
+}
+
+.tituloAcciones {
+  padding-right: 0px;
+  width: fit-content;
+  justify-content: center;
 }
 
 button {
