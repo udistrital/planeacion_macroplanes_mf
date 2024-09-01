@@ -7,7 +7,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
@@ -36,6 +36,7 @@ import { ConstruccionPmeeComponent } from './pages/pmee/construccion-pmee/constr
 import { EvaluacionPmeeComponent } from './pages/pmee/evaluacion-pmee/evaluacion-pmee.component';
 import { SeguimientoPmeeComponent } from './pages/pmee/seguimiento-pmee/seguimiento-pmee.component';
 import { PuiComponent } from './pages/pui/pui.component';
+import { TranslationPaginator } from './@core/services/TranslationPaginator';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,7 @@ import { PuiComponent } from './pages/pui/pui.component';
     MatMenuModule,
     FormsModule,
   ],
-  providers: [],
+  providers: [{ provide: MatPaginatorIntl, useClass: TranslationPaginator }],
   bootstrap: [AppComponent],
 })
 export class AppModule { }
