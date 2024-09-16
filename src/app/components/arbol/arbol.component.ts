@@ -122,7 +122,7 @@ export class ArbolComponent implements OnInit {
   }
 
   ngOnChanges(changes: any) {
-    if (this.tipoPlanId !== this.codigosService.getCodigo(TIPO_PLAN.Proyecto)) {
+    if (this.tipoPlanId !== this.ID_TIPO_PLAN_PROYECTO) {
       if (this.idPlan !== this.planActual) {
         this.loadArbolMid();
         this.planActual = this.idPlan;
