@@ -329,9 +329,11 @@ export class ConsultarPlanesComponent implements OnInit {
     });
   }
 
-  formatearVigencias(row: any) {
-    if (!row.vigencia_aplica || JSON.parse(row.vigencia_aplica).length == 0) return 'Por definir';
-    return JSON.parse(row.vigencia_aplica).map((vigencia: any) => vigencia.Nombre).join(', ');
+  formatearVigencias(row: any): string[] {
+    if (!row.vigencia_aplica || JSON.parse(row.vigencia_aplica).length == 0) {
+      return ['Por definir'];
+    }
+    return JSON.parse(row.vigencia_aplica).map((vigencia: any) => vigencia.Nombre);
   }
 
   putData(res: any, bandera: any) {
